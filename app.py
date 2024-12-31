@@ -18,62 +18,51 @@ def index():
         narration_audio_path = os.path.join("static", "narration.mp3")
 
         try:
-            # Get form data
+            # Input data
             video_file = request.files["video"]
             narration_text = request.form["text"]
-            start_time = float(request.form.get("start_time", 0))  # Default start at 0
-            end_time = request.form.get("end_time")  # May be None
-            selected_voice = request.form["voice"]  # Get selected voice
+            start_time = float(request.form.get("start_time", 0)) 
+            end_time = request.form.get("end_time")
+            selected_voice = request.form["voice"]
 
-            # Save the uploaded video
+            # Process uploaded video
             video_file.save(video_path)
-
-            # Load video and get its duration
             video_clip = VideoFileClip(video_path)
             video_duration = video_clip.duration
 
-            # Generate narration audio with the selected voice
+            # Generate narration audio
             engine = pyttsx3.init()
             voices = engine.getProperty("voices")
             if selected_voice == "male":
-                engine.setProperty("voice", voices[0].id)  # Male voice
+                engine.setProperty("voice", voices[0].id) # Male
             elif selected_voice == "female":
-                engine.setProperty("voice", voices[1].id)  # Female voice
-
-            # Save the narration audio to a file
+                engine.setProperty("voice", voices[1].id) # Female
             engine.save_to_file(narration_text, narration_audio_path)
             engine.runAndWait()
 
-            # Load and process narration audio
+            # Process narration audio
             narration_audio = AudioSegment.from_file(narration_audio_path)
             narration_audio = narration_audio.set_frame_rate(44100).set_channels(1)
-            narration_duration = len(narration_audio) / 1000  # Convert from ms to seconds
+            narration_duration = len(narration_audio) / 1000
 
-            # If no end time is provided
             if not end_time:
                 end_time = min(video_duration, start_time + narration_duration)
             else:
                 end_time = float(end_time)
 
             duration = end_time - start_time
-
             if narration_duration > duration:
                 speed_factor = narration_duration / duration
                 narration_audio = narration_audio._spawn(
                     narration_audio.raw_data, overrides={"frame_rate": int(44100 * speed_factor)}
                 ).set_frame_rate(44100)
 
-            # Export adjusted narration
             narration_audio.export(narration_audio_path, format="mp3")
 
-            # Set audio on the video
+            # Combine audio and video
             narration_audio_clip = AudioFileClip(narration_audio_path).subclip(0, min(duration, video_duration - start_time))
             video_with_audio = video_clip.set_audio(narration_audio_clip)
             video_with_audio.write_videofile(output_path, codec="libx264", audio_codec="aac")
-
-            # Close clips to release resources
-            video_with_audio.close()
-            del video_with_audio
 
             @after_this_request
             def remove_file(response):
