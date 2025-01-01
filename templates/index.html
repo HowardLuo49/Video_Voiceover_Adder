@@ -37,9 +37,9 @@
             <div class="form-group">
                 <label for="voice">Select Voice:</label>
                 <select name="voice" id="voice" required>
-                    <option value="default">Default Voice</option>
-                    <option value="male">Male Voice</option>
-                    <option value="female">Female Voice</option>
+                    {% for voice in voice_options %}
+                    <option value="{{ voice.id }}">Voice {{ voice.id }} - {{ voice.name }}</option>
+                    {% endfor %}
                 </select>
                 <small class="description">Choose the narration voice.</small>
             </div>

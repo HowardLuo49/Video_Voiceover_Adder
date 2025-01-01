@@ -10,3 +10,6 @@ This web application takes in a video, some input text, begining/end timestamps,
 Run the Flask application: python ./app.py
 
 The application will be deployed to your local ip on port 8082.
+
+## Adding additional voices
+Users can install other voices locally (pyttsx3). Use voice_list.py to see what voices are already installed.

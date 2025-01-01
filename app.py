@@ -33,10 +33,13 @@ def index():
             # Generate narration audio
             engine = pyttsx3.init()
             voices = engine.getProperty("voices")
-            if selected_voice == "male":
-                engine.setProperty("voice", voices[0].id) # Male
-            elif selected_voice == "female":
-                engine.setProperty("voice", voices[1].id) # Female
+            # if selected_voice == "male":
+            #     engine.setProperty("voice", voices[0].id) # Male
+            # elif selected_voice == "female":
+            #     engine.setProperty("voice", voices[1].id) # Female
+            selected_voice_index = int(request.form["voice"])
+            engine.setProperty('voice', voices[selected_voice_index].id)
+
             engine.save_to_file(narration_text, narration_audio_path)
             engine.runAndWait()
 
@@ -51,11 +54,18 @@ def index():
                 end_time = float(end_time)
 
             duration = end_time - start_time
-            if narration_duration > duration:
+            if narration_duration < duration:
+                stretch_factor = duration / narration_duration
+                narration_audio = narration_audio._spawn(
+                    narration_audio.raw_data,
+                    overrides={"frame_rate": int(narration_audio.frame_rate / stretch_factor)}
+                ).set_frame_rate(narration_audio.frame_rate)
+            elif narration_duration > duration:
                 speed_factor = narration_duration / duration
                 narration_audio = narration_audio._spawn(
-                    narration_audio.raw_data, overrides={"frame_rate": int(44100 * speed_factor)}
-                ).set_frame_rate(44100)
+                    narration_audio.raw_data,
+                    overrides={"frame_rate": int(narration_audio.frame_rate * speed_factor)}
+                ).set_frame_rate(narration_audio.frame_rate)
 
             narration_audio.export(narration_audio_path, format="mp3")
 
@@ -83,8 +93,11 @@ def index():
                 video_clip.close()
             if narration_audio_clip:
                 narration_audio_clip.close()
-
-    return render_template("index.html")
+    else:
+        engine = pyttsx3.init()
+        voices = engine.getProperty("voices")
+        voice_options = [{"id": idx, "name": voice.name} for idx, voice in enumerate(voices)]
+        return render_template("index.html", voice_options=voice_options)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8082, debug=True)
