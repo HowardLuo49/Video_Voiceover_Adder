@@ -7,8 +7,6 @@ This web application takes in a video, some input text, begining/end timestamps,
 
 ## How to deploy for personal use
 
-Install required packages if necessary: pip install -r requirements.txt
-
 Run the Flask application: python ./app.py
 
 The application will be deployed to your local ip on port 8082.
