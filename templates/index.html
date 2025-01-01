@@ -8,30 +8,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload a Video and Add Narration</h1>
+        <h1>Add Narration to a Video</h1>
         <form action="/" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="video">Select Video:</label>
                 <input type="file" name="video" id="video" accept="video/*" required>
-                <small class="description">Choose the video file you want to add narration to.</small>
+                <small class="description">Select the video you wish to add narration to</small>
             </div>
             
             <div class="form-group">
                 <label for="text">Narration Text:</label>
                 <textarea name="text" id="text" rows="5" required></textarea>
-                <small class="description">Enter the text that will be narrated during the video.</small>
+                <small class="description">Enter narration text</small>
             </div>
             
             <div class="form-group">
                 <label for="start_time">Start Time (seconds):</label>
                 <input type="number" step="0.1" name="start_time" id="start_time">
-                <small class="description">The time (in seconds) at which the narration will start in the video. Default is 0.</small>
+                <small class="description">The timestamp (in seconds) when narration will start in the video. Default is 0 (start).</small>
             </div>
             
             <div class="form-group">
                 <label for="end_time">End Time (seconds):</label>
                 <input type="number" step="0.1" name="end_time" id="end_time">
-                <small class="description">The time (in seconds) at which the narration will end. Leave blank to let narration play at normal pace.</small>
+                <small class="description">The timestamp (in seconds) when the narration will end. Leave this blank to let narration play at a normal pace.</small>
             </div>
 
             <div class="form-group">
@@ -41,7 +41,7 @@
                     <option value="male">Male Voice</option>
                     <option value="female">Female Voice</option>
                 </select>
-                <small class="description">Choose the voice for the narration.</small>
+                <small class="description">Choose the narration voice.</small>
             </div>
             
             <button type="submit" class="btn-submit">Add Narration</button>
